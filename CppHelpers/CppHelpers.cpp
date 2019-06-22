@@ -295,20 +295,23 @@ namespace hlp
 				DWORD requiredSize;
 
 				SetupDiGetDeviceInterfaceDetailW(hDevInfo_, &diData, nullptr, 0, &requiredSize, nullptr);
-				if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+				if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
 				{
-					auto buffer{ std::make_unique<BYTE[]>(requiredSize) };
-					auto pDiDetailData{ reinterpret_cast<PSP_DEVICE_INTERFACE_DETAIL_DATA_W>(buffer.get()) };
-					pDiDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA_W);
-
-					if (!SetupDiGetDeviceInterfaceDetailW(hDevInfo_, &diData, pDiDetailData, requiredSize, nullptr, nullptr))
-					{
-						devicePaths.clear();
-						break;
-					}
-
-					devicePaths.push_back(std::wstring{ pDiDetailData->DevicePath });
+					devicePaths.clear();
+					break;
 				}
+
+				auto buffer{ std::make_unique<BYTE[]>(requiredSize) };
+				auto pDiDetailData{ reinterpret_cast<PSP_DEVICE_INTERFACE_DETAIL_DATA_W>(buffer.get()) };
+				pDiDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA_W);
+
+				if (!SetupDiGetDeviceInterfaceDetailW(hDevInfo_, &diData, pDiDetailData, requiredSize, nullptr, nullptr))
+				{
+					devicePaths.clear();
+					break;
+				}
+
+				devicePaths.push_back(std::wstring{ pDiDetailData->DevicePath });
 			}
 		}
 
