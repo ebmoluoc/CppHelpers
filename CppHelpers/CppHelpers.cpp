@@ -647,7 +647,7 @@ namespace hlp
 	//
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
-		// http://msdn.microsoft.com/en-us/library/bb757020.aspx
+	// http://msdn.microsoft.com/en-us/library/bb757020.aspx
 	HBITMAP BitmapFromIcon(HICON hIcon)
 	{
 		HBITMAP hBitmap{ nullptr };
